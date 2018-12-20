@@ -21,41 +21,58 @@ public class Response implements ServletResponse {
     }
 
     public void sendStaticResource() throws IOException {
+        byte[] bytes = new byte[BUFFER_SIZE];
+        FileInputStream fis = null;
         try {
+            // 书上方法
+//            File file = new File(HttpServer.WEB_ROOT, request.getUri());
+//            fis = new FileInputStream(file);
+//            int ch = fis.read(bytes, 0, BUFFER_SIZE);
+//            while (ch!=-1) {
+//                output.write(bytes, 0, ch);
+//                ch = fis.read(bytes, 0, BUFFER_SIZE);
+//            }
+
+            // 修改过的方法
             File file = new File(HttpServer.WEB_ROOT, request.getUri());
-            if (file.exists()) {
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                StringBuffer stringBuffer = new StringBuffer() ;
-                String line = null;
-                while ((line = reader.readLine()) != null){
-                    stringBuffer.append(line).append("\r\n");
-                }
-                StringBuffer result = new StringBuffer();
-                result.append("HTTP/1.1 200 OK\r\n");
-                result.append("Content-Type:text/html\r\n");
-                result.append("Content-Length:" + file.length() + "\r\n");
-                result.append("\r\n"+stringBuffer.toString());
-                output.write(result.toString().getBytes());
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            StringBuffer stringBuffer = new StringBuffer() ;
+            String line = null;
+            while ((line = reader.readLine()) != null){
+                stringBuffer.append(line).append("\r\n");
             }
-            else {
-                // file not found
-                String errorMessage = "HTTP/1.1 404 File Not Found\r\n" +
-                        "Content-Type: text/html\r\n" +
-                        "Content-Length: 23\r\n" +
-                        "\r\n" +
-                        "<h1>File Not Found</h1>";
-                output.write(errorMessage.getBytes());
-            }
-        }
-        catch (Exception e) {
-            // thrown if cannot instantiate a File object
-            System.out.println(e.toString() );
-        }
-        finally {
+            StringBuffer result = new StringBuffer();
+            result.append("HTTP/1.1 200 OK\r\n");
+            result.append("Content-Type:text/html\r\n");
+            result.append("Content-Length:" + file.length() + "\r\n");
+            result.append("\r\n"+stringBuffer.toString());
+            output.write(result.toString().getBytes());
             output.flush();
             output.close();
         }
+        catch (FileNotFoundException e) {
+             String errorMessage = "HTTP/1.1 404 File Not Found\r\n" +
+                "Content-Type: text/html\r\n" +
+                "Content-Length: 23\r\n" +
+                "\r\n" +
+                "<h1>File Not Found</h1>";
+             output.write(errorMessage.getBytes());
+        }
+        finally {
+            if (fis!=null){
+                fis.close();
+            }
+        }
     }
+
+    @Override
+    public PrintWriter getWriter() throws IOException {
+        // autoflush is true, println() will flush,(刷新输出)
+        // but print() will not.
+        writer = new PrintWriter(output,true);
+        return writer;
+    }
+
 
     @Override
     public String getCharacterEncoding() {
@@ -70,14 +87,6 @@ public class Response implements ServletResponse {
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
         return null;
-    }
-
-    @Override
-    public PrintWriter getWriter() throws IOException {
-        // autoflush is true, println() will flush,(刷新输出)
-        // but print() will not.
-        writer = new PrintWriter(output,true);
-        return writer;
     }
 
     @Override

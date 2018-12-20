@@ -45,11 +45,14 @@ public class HttpServer1 {
                 Response response = new Response(output);
                 response.setRequest(request);
 
-                if (request.getUri().startsWith("/servlet/")){
-
+                if (request.getUri().startsWith("/servlet/")) {
+                    ServletProcessor1 processor1 = new ServletProcessor1();
+                    processor1.process(request, response);
                 }
-
-                response.sendStaticResource();
+                else {
+                    StaticResourceProcessor processor = new StaticResourceProcessor();
+                    processor.process(request, response);
+                }
 
                 socket.close();
 

@@ -37,6 +37,7 @@ public class ServletProcessor1 {
         Class myClass = null;
         try {
             // 载入servlet类
+            // 名字取到了，但是没能加载到
             myClass = loader.loadClass(servletName);
         }
         catch (ClassNotFoundException e){
