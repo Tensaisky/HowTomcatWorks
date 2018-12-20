@@ -23,9 +23,10 @@ public class ServletProcessor1 {
             URLStreamHandler streamHandler = null;
             File classPath = new File(Constants.WEB_ROOT);
             // 类载入器查找servlet类的目录称为仓库repository
+            // 查找仓库目录
             String repository =
                     (new URL("file",null,classPath.getCanonicalPath()+File.separator)).toString();
-
+            // streamHandler是为了指明URL调用哪个构造器
             urls[0] = new URL(null,repository, streamHandler);
             loader = new URLClassLoader(urls);
         }
@@ -35,6 +36,7 @@ public class ServletProcessor1 {
 
         Class myClass = null;
         try {
+            // 载入servlet类
             myClass = loader.loadClass(servletName);
         }
         catch (ClassNotFoundException e){
@@ -43,6 +45,7 @@ public class ServletProcessor1 {
 
         Servlet servlet = null;
         try {
+            // 创造servlet实例,调用service方法
             servlet = (Servlet)myClass.newInstance();
             servlet.service((ServletRequest) request , (ServletResponse) response);
         }
