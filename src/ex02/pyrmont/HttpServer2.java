@@ -46,6 +46,7 @@ public class HttpServer2 {
                 response.setRequest(request);
 
                 if (request.getUri().startsWith("/servlet/")) {
+                    // 这里和 HttpServer1 不同
                     ServletProcessor2 processor2 = new ServletProcessor2();
                     processor2.process(request, response);
                 }

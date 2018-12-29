@@ -29,6 +29,8 @@ public class ServletProcessor2 {
             String repository =
                     (new URL("file",null,classPath.getCanonicalPath()+File.separator)).toString();
             // streamHandler是为了指明URL调用哪个构造器
+            // repository 指向了 "工程目录\webroot"
+            // repository = repository + "servlet\\";
             urls[0] = new URL(null,repository, streamHandler);
             loader = new URLClassLoader(urls);
         }
